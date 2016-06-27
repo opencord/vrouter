@@ -94,6 +94,7 @@ class VRouterTenantForm(forms.ModelForm):
 
     class Meta:
         model = VRouterTenant
+        fields = '__all__'
 
 class VRouterTenantAdmin(ReadOnlyAwareAdmin):
     list_display = ('backend_status_icon', 'id', 'subscriber_tenant', 'public_ip' )
