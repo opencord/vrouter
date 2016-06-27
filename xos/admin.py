@@ -28,6 +28,7 @@ class VRouterServiceForm(forms.ModelForm):
 
     class Meta:
         model = VRouterService
+        fields = '__all__'
 
 class VRouterServiceAdmin(ReadOnlyAwareAdmin):
     model = VRouterService
@@ -57,7 +58,7 @@ class VRouterServiceAdmin(ReadOnlyAwareAdmin):
     suit_form_includes = (('vrouteradmin.html', 'top', 'administration'),
                            ) #('hpctools.html', 'top', 'tools') )
 
-    def queryset(self, request):
+    def get_queryset(self, request):
         return VRouterService.get_service_objects_by_user(request.user)
 
 class VRouterTenantForm(forms.ModelForm):
@@ -107,7 +108,7 @@ class VRouterTenantAdmin(ReadOnlyAwareAdmin):
 
     suit_form_tabs = (('general','Details'),)
 
-    def queryset(self, request):
+    def get_queryset(self, request):
         return VRouterTenant.get_tenant_objects_by_user(request.user)
 
 admin.site.register(VRouterService, VRouterServiceAdmin)
