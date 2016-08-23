@@ -1,0 +1,8 @@
+manifest
+model_deps
+run.sh
+steps/sync_vrouterapp.py
+steps/sync_vrouterdevice.py
+steps/sync_vrouterports.py
+vrouter-synchronizer.py
+vrouter_config

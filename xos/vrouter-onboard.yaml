@@ -16,5 +16,9 @@ topology_template:
           models: models.py
           admin: admin.py
           admin_template: templates/vrouteradmin.html
+          tosca_custom_types: vrouter.yaml
           tosca_resource: tosca/resources/vrouterservice.py
+          rest_service: api/service/vrouter.py
+          synchronizer: synchronizer/manifest
+          synchronizer_run: vrouter-synchronizer.py
 

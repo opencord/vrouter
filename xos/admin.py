@@ -11,7 +11,7 @@ from django.utils import timezone
 from django.contrib.contenttypes import generic
 from suit.widgets import LinkedSelect
 from core.models import AddressPool
-from core.admin import ServiceAppAdmin,SliceInline,ServiceAttrAsTabInline, ReadOnlyAwareAdmin, XOSTabularInline, ServicePrivilegeInline, AddressPoolInline
+from core.admin import ServiceAppAdmin, SliceInline, ServiceAttrAsTabInline, ReadOnlyAwareAdmin, XOSTabularInline, ServicePrivilegeInline, AddressPoolInline
 from core.middleware import get_request
 
 from functools import update_wrapper
@@ -19,9 +19,31 @@ from django.contrib.admin.views.main import ChangeList
 from django.core.urlresolvers import reverse
 from django.contrib.admin.utils import quote
 
+
+class VRouterPortInline(XOSTabularInline):
+    model = VRouterPort
+    fields = ['openflow_id']
+    suit_classes = 'suit-tab suit-tab-vrouter_ports'
+    extra = 0
+
+
+class VRouterInterfaceInline(XOSTabularInline):
+    model = VRouterInterface
+    fields = ['name', 'mac', 'vlan']
+    suit_classes = 'suit-tab suit-tab-vrouter_interfaces'
+    extra = 0
+
+
+class VRouterIpInline(XOSTabularInline):
+    model = VRouterIp
+    fields = ['ip']
+    suit_classes = 'suit-tab suit-tab-vrouter_ips'
+    extra = 0
+
+
 class VRouterServiceForm(forms.ModelForm):
-    def __init__(self,*args,**kwargs):
-        super (VRouterServiceForm,self ).__init__(*args,**kwargs)
+    def __init__(self, *args, **kwargs):
+        super(VRouterServiceForm, self).__init__(*args, **kwargs)
 
     def save(self, commit=True):
         return super(VRouterServiceForm, self).save(commit=commit)
@@ -30,36 +52,59 @@ class VRouterServiceForm(forms.ModelForm):
         model = VRouterService
         fields = '__all__'
 
+
 class VRouterServiceAdmin(ReadOnlyAwareAdmin):
     model = VRouterService
     verbose_name = "vRouter Service"
     verbose_name_plural = "vRouter Service"
     list_display = ("backend_status_icon", "name", "enabled")
     list_display_links = ('backend_status_icon', 'name', )
-    fieldsets = [(None, {'fields': ['backend_status_text', 'name','enabled','versionNumber', 'description', "view_url", "icon_url", ],
-                         'classes':['suit-tab suit-tab-general']})]
-    readonly_fields = ('backend_status_text', )
-    inlines = [SliceInline,ServiceAttrAsTabInline,ServicePrivilegeInline,AddressPoolInline]
+    fieldsets = [(None, {
+        'fields': [
+            'backend_status_text',
+            'name',
+            'enabled',
+            'versionNumber',
+            'description',
+            'view_url',
+            'icon_url',
+            'rest_hostname',
+            'rest_port',
+            'rest_user',
+            'rest_pass',
+        ],
+        'classes':['suit-tab suit-tab-general']})]
+
+    # NOTE make rest_* params editable
+    readonly_fields = (
+        'backend_status_text',
+        'rest_hostname',
+        'rest_port',
+        'rest_user',
+        'rest_pass'
+    )
+    inlines = [SliceInline, ServiceAttrAsTabInline, ServicePrivilegeInline, AddressPoolInline]
     form = VRouterServiceForm
 
     extracontext_registered_admins = True
 
     user_readonly_fields = ["name", "enabled", "versionNumber", "description"]
 
-    suit_form_tabs =(('general', 'vRouter Service Details'),
+    suit_form_tabs = (
+        ('general', 'vRouter Service Details'),
         ('administration', 'Administration'),
         ('addresspools', 'Addresses'),
-        #('tools', 'Tools'),
-        ('slices','Slices'),
-        ('serviceattrs','Additional Attributes'),
-        ('serviceprivileges','Privileges'),
+        # ('tools', 'Tools'),
+        ('slices', 'Slices'),
+        ('serviceattrs', 'Additional Attributes'),
+        ('serviceprivileges', 'Privileges'),
     )
 
-    suit_form_includes = (('vrouteradmin.html', 'top', 'administration'),
-                           ) #('hpctools.html', 'top', 'tools') )
+    suit_form_includes = ('vrouteradmin.html', 'top', 'administration')  # ('hpctools.html', 'top', 'tools') )
 
     def get_queryset(self, request):
         return VRouterService.get_service_objects_by_user(request.user)
+
 
 class VRouterTenantForm(forms.ModelForm):
     public_ip = forms.CharField(required=True)
@@ -97,20 +142,82 @@ class VRouterTenantForm(forms.ModelForm):
         model = VRouterTenant
         fields = '__all__'
 
+
 class VRouterTenantAdmin(ReadOnlyAwareAdmin):
-    list_display = ('backend_status_icon', 'id', 'subscriber_tenant', 'public_ip' )
+    list_display = ('backend_status_icon', 'id', 'subscriber_tenant', 'public_ip')
     list_display_links = ('backend_status_icon', 'id')
-    fieldsets = [ (None, {'fields': ['backend_status_text', 'kind', 'provider_service', 'subscriber_tenant', 'subscriber_service',
-                                     'address_pool', 'public_ip', 'public_mac', 'gateway_ip', 'gateway_mac', 'cidr'],
-                          'classes':['suit-tab suit-tab-general']})]
+    fieldsets = [(None, {
+        'fields': [
+            'backend_status_text', 'kind', 'provider_service', 'subscriber_tenant', 'subscriber_service',
+            'address_pool', 'public_ip', 'public_mac', 'gateway_ip', 'gateway_mac', 'cidr'],
+        'classes':['suit-tab suit-tab-general']
+    })]
     readonly_fields = ('backend_status_text', 'service_specific_attribute', 'gateway_ip', 'gateway_mac', 'cidr')
     form = VRouterTenantForm
 
-    suit_form_tabs = (('general','Details'),)
+    suit_form_tabs = (('general', 'Details'),)
 
     def get_queryset(self, request):
         return VRouterTenant.get_tenant_objects_by_user(request.user)
 
+
+class VRouterDeviceAdmin(ReadOnlyAwareAdmin):
+    list_display = ('name', 'openflow_id', 'config_key', 'driver')
+    fieldsets = [(None, {
+        'fields': ['name', 'openflow_id', 'vrouter_service', 'config_key', 'driver'],
+        'classes':['suit-tab suit-tab-general']
+    })]
+    inlines = [VRouterPortInline]
+
+    suit_form_tabs = (
+        ('general', 'Device Details'),
+        ('vrouter_ports', 'Ports'),
+    )
+
+
+class VRouterPortAdmin(ReadOnlyAwareAdmin):
+    list_display = ('name', 'openflow_id', 'vrouter_device')
+    fieldsets = [(None, {
+        'fields': ['name', 'openflow_id', 'vrouter_service', 'vrouter_device'],
+        'classes':['suit-tab suit-tab-general']
+    })]
+    inlines = [VRouterInterfaceInline]
+
+    suit_form_tabs = (
+        ('general', 'Ports Details'),
+        ('vrouter_interfaces', 'Interfaces'),
+    )
+
+
+class VRouterInterfaceAdmin(ReadOnlyAwareAdmin):
+    list_display = ('name', 'mac', 'vlan')
+    fieldsets = [(None, {
+        'fields': ['name', 'vrouter_port', 'mac', 'vlan'],
+        'classes':['suit-tab suit-tab-general']
+    })]
+    inlines = [VRouterIpInline]
+
+    suit_form_tabs = (
+        ('general', 'Interfaces Details'),
+        ('vrouter_ips', 'Ips'),
+    )
+
+
+class VRouterIpAdmin(ReadOnlyAwareAdmin):
+    list_display = ('name', 'ip', 'vrouter_interface')
+    fieldsets = [(None, {'fields': ['name', 'ip', 'vrouter_interface']})]
+
+
+class VRouterAppAdmin(ReadOnlyAwareAdmin):
+    list_display = ('name', 'control_plane_connect_point', 'ospf_enabled')
+    fieldsets = [(None, {'fields': ['name', 'vrouter_service', 'control_plane_connect_point', 'ospf_enabled']})]
+
+
 admin.site.register(VRouterService, VRouterServiceAdmin)
 admin.site.register(VRouterTenant, VRouterTenantAdmin)
+admin.site.register(VRouterDevice, VRouterDeviceAdmin)
+admin.site.register(VRouterPort, VRouterPortAdmin)
+admin.site.register(VRouterInterface, VRouterInterfaceAdmin)
+admin.site.register(VRouterIp, VRouterIpAdmin)
+admin.site.register(VRouterApp, VRouterAppAdmin)
 
