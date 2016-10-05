@@ -1,13 +1,5 @@
-import os
-import pdb
-import sys
-import tempfile
-sys.path.append("/opt/tosca")
-from translator.toscalib.tosca_template import ToscaTemplate
-
-from services.vrouter.models import VRouterService
-
 from service import XOSService
+from services.vrouter.models import VRouterService
 
 class XOSVRouterService(XOSService):
     provides = "tosca.nodes.VRouterService"
