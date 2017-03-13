@@ -32,46 +32,14 @@ class VRouterService(Service):
     class Meta:
         app_label = APP_LABEL
         verbose_name = "vRouter Service"
-        proxy = True
 
-    default_attributes = {
-        "rest_hostname": "",
-        "rest_port": "8181",
-        "rest_user": "onos",
-        "rest_pass": "rocks"
-    }
+    # Are rest_hostname and rest_port redundant with ONOS service?
+    # Should ONOSService be augmented with rest_user and rest_pass?
 
-    @property
-    def rest_hostname(self):
-        return self.get_attribute("rest_hostname", self.default_attributes["rest_hostname"])
-
-    @rest_hostname.setter
-    def rest_hostname(self, value):
-        self.set_attribute("rest_hostname", value)
-
-    @property
-    def rest_port(self):
-        return self.get_attribute("rest_port", self.default_attributes["rest_port"])
-
-    @rest_port.setter
-    def rest_port(self, value):
-        self.set_attribute("rest_port", value)
-
-    @property
-    def rest_user(self):
-        return self.get_attribute("rest_user", self.default_attributes["rest_user"])
-
-    @rest_user.setter
-    def rest_user(self, value):
-        self.set_attribute("rest_user", value)
-
-    @property
-    def rest_pass(self):
-        return self.get_attribute("rest_pass", self.default_attributes["rest_pass"])
-
-    @rest_pass.setter
-    def rest_pass(self, value):
-        self.set_attribute("rest_pass", value)
+    rest_hostname = StrippedCharField(max_length=255, null=True, blank=True)
+    rest_port = models.IntegerField(default=8181)
+    rest_user = StrippedCharField(max_length=255, default="onos")
+    rest_pass = StrippedCharField(max_length=255, default="rocks")
 
     def ip_to_mac(self, ip):
         (a, b, c, d) = ip.split('.')
@@ -112,16 +80,13 @@ class VRouterService(Service):
 
 class VRouterTenant(Tenant):
     class Meta:
-        proxy = True
         verbose_name = "vRouter Tenant"
 
     KIND = VROUTER_KIND
 
-    simple_attributes = (
-        ("public_ip", None),
-        ("public_mac", None),
-        ("address_pool_id", None),
-    )
+    public_ip = StrippedCharField(max_length = 30, null=True, blank=True)
+    public_mac = StrippedCharField(max_length = 30, null=True, blank=True)
+    address_pool = models.ForeignKey(AddressPool, related_name='vrouter_tenants', blank=True, null=True)
 
     @property
     def gateway_ip(self):
@@ -150,30 +115,9 @@ class VRouterTenant(Tenant):
                 return int(parts[1].strip())
         return None
 
-    @property
-    def address_pool(self):
-        if getattr(self, "cached_address_pool", None):
-            return self.cached_address_pool
-        if not self.address_pool_id:
-            return None
-        aps = AddressPool.objects.filter(id=self.address_pool_id)
-        if not aps:
-            return None
-        ap = aps[0]
-        self.cached_address_pool = ap
-        return ap
-
-    @address_pool.setter
-    def address_pool(self, value):
-        if value:
-            value = value.id
-        if (value != self.get_attribute("address_pool_id", None)):
-            self.cached_address_pool = None
-        self.set_attribute("address_pool_id", value)
-
     def cleanup_addresspool(self):
-        if self.address_pool_id:
-            ap = AddressPool.objects.filter(id=self.address_pool_id)
+        if self.address_pool:
+            ap = self.address_pool
             if ap:
                 ap[0].put_address(self.public_ip)
                 self.public_ip = None
@@ -181,8 +125,6 @@ class VRouterTenant(Tenant):
     def delete(self, *args, **kwargs):
         self.cleanup_addresspool()
         super(VRouterTenant, self).delete(*args, **kwargs)
-
-VRouterTenant.setup_simple_attributes()
 
 
 # DEVICES

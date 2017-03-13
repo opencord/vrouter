@@ -107,12 +107,9 @@ class VRouterServiceAdmin(ReadOnlyAwareAdmin):
 
 
 class VRouterTenantForm(forms.ModelForm):
-    public_ip = forms.CharField(required=True)
-    public_mac = forms.CharField(required=True)
     gateway_ip = forms.CharField(required=False)
     gateway_mac = forms.CharField(required=False)
     cidr = forms.CharField(required=False)
-    address_pool = forms.ModelChoiceField(queryset=AddressPool.objects.all(),required=False)
 
     def __init__(self,*args,**kwargs):
         super (VRouterTenantForm,self ).__init__(*args,**kwargs)
@@ -120,22 +117,16 @@ class VRouterTenantForm(forms.ModelForm):
         self.fields['provider_service'].queryset = VRouterService.get_service_objects().all()
         if self.instance:
             # fields for the attributes
-            self.fields['address_pool'].initial = self.instance.address_pool
-            self.fields['public_ip'].initial = self.instance.public_ip
-            self.fields['public_mac'].initial = self.instance.public_mac
             self.fields['gateway_ip'].initial = self.instance.gateway_ip
             self.fields['gateway_mac'].initial = self.instance.gateway_mac
             self.fields['cidr'].initial = self.instance.cidr
         if (not self.instance) or (not self.instance.pk):
             # default fields for an 'add' form
             self.fields['kind'].initial = VROUTER_KIND
-            if VRouterService.get_service_objects().exists():
-               self.fields["provider_service"].initial = VRouterService.get_service_objects().all()[0]
+            if VRouterService.objects.exists():
+               self.fields["provider_service"].initial = VRouterService.objects.first()
 
     def save(self, commit=True):
-        self.instance.public_ip = self.cleaned_data.get("public_ip")
-        self.instance.public_mac = self.cleaned_data.get("public_mac")
-        self.instance.address_pool = self.cleaned_data.get("address_pool")
         return super(VRouterTenantForm, self).save(commit=commit)
 
     class Meta:
