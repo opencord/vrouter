@@ -3,17 +3,11 @@ import sys
 import requests
 import json
 import urllib
-from django.db.models import Q, F
-from services.vrouter.models import *
-from synchronizers.base.syncstep import SyncStep
+from synchronizers.new_base.syncstep import SyncStep
+from synchronizers.new_base.modelaccessor import *
 from xos.logger import Logger, logging
 
-# from core.models import Service
 from requests.auth import HTTPBasicAuth
-
-parentdir = os.path.join(os.path.dirname(__file__), "..")
-sys.path.insert(0, parentdir)
-
 logger = Logger(level=logging.INFO)
 
 
