@@ -1,0 +1,9 @@
+FROM xosproject/xos-synchronizer-base
+
+ADD . /opt/xos/synchronizers/vrouter
+
+ENTRYPOINT []
+
+WORKDIR "/opt/xos/synchronizers/vrouter"
+
+CMD bash -c "cd /opt/xos/synchronizers/vrouter; ./run-from-api.sh"

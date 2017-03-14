@@ -1,0 +1,20 @@
+# Sets options for the synchronizer
+[observer]
+name=vrouter
+dependency_graph=/opt/xos/synchronizers/vrouter/model_deps
+steps_dir=/opt/xos/synchronizers/vrouter/steps
+sys_dir=/opt/xos/synchronizers/vrouter/sys
+#logfile=/var/log/xos_backend.log
+log_file=console
+log_level=debug
+pretend=False
+backoff_disabled=True
+save_ansible_output=True
+proxy_ssh=True
+proxy_ssh_key=/opt/cord_profile/node_key
+proxy_ssh_user=root
+accessor_kind=api
+accessor_password=@/opt/xos/services/vrouter/credentials/xosadmin@opencord.org
+
+[networking]
+use_vtn=True
