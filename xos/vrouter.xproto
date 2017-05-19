@@ -9,7 +9,7 @@ message VRouterService (Service){
      required string rest_pass = 4 [default = "rocks", max_length = 255, content_type = "stripped", blank = False, null = False, db_index = False];
 }
 
-message VRouterDevice (PlCoreBase){
+message VRouterDevice (XOSBase){
      optional string name = 1 [help_text = "device friendly name", max_length = 20, null = True, db_index = False, blank = True];
      required string openflow_id = 2 [help_text = "device identifier in ONOS", max_length = 20, null = False, db_index = False, blank = False];
      required string config_key = 3 [default = "basic", max_length = 32, blank = False, help_text = "configuration key", null = False, db_index = False];
@@ -17,28 +17,28 @@ message VRouterDevice (PlCoreBase){
      required manytoone vrouter_service->VRouterService:devices = 5 [db_index = True, null = False, blank = False];
 }
 
-message VRouterPort (PlCoreBase){
+message VRouterPort (XOSBase){
      optional string name = 1 [help_text = "port friendly name", max_length = 20, null = True, db_index = False, blank = True];
      required string openflow_id = 2 [help_text = "port identifier in ONOS", max_length = 21, null = False, db_index = False, blank = False];
      required manytoone vrouter_device->VRouterDevice:ports = 3 [db_index = True, null = False, blank = False];
      required manytoone vrouter_service->VRouterService:device_ports = 4 [db_index = True, null = False, blank = False];
 }
 
-message VRouterApp (PlCoreBase){
+message VRouterApp (XOSBase){
      required manytoone vrouter_service->VRouterService:apps = 1 [db_index = True, null = False, blank = False];
      required string name = 2 [help_text = "application name", max_length = 50, null = False, db_index = False, blank = False];
      required string control_plane_connect_point = 3 [help_text = "port identifier in ONOS", max_length = 21, null = False, db_index = False, blank = False];
      required bool ospf_enabled = 4 [help_text = "ospf enabled", default = True, null = False, db_index = False, blank = True];
 }
 
-message VRouterInterface (PlCoreBase) {
+message VRouterInterface (XOSBase) {
      required manytoone vrouter_port->VRouterPort:interfaces = 1 [db_index = True, null = False, blank = False];
      required string name = 2 [help_text = "interface name", max_length = 10, null = False, db_index = False, blank = False];
      required string mac = 3 [help_text = "interface mac", max_length = 17, null = False, db_index = False, blank = False];
      optional string vlan = 4 [help_text = "interface vlan id", max_length = 10, null = True, db_index = False, blank = True];
 }
 
-message VRouterIp (PlCoreBase){
+message VRouterIp (XOSBase){
      optional string name = 1 [help_text = "ip friendly name", max_length = 20, null = True, db_index = False, blank = True];
      required manytoone vrouter_interface->VRouterInterface:ips = 2 [db_index = True, null = False, blank = False];
      required string ip = 3 [help_text = "interface ips", max_length = 19, null = False, db_index = False, blank = False];

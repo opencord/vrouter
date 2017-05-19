@@ -34,7 +34,7 @@ from core.models import Tenant
 
 
 
-class VRouterApp(PlCoreBase):
+class VRouterApp(XOSBase):
 
   KIND = "vROUTER"
 
@@ -69,7 +69,7 @@ class VRouterApp(PlCoreBase):
 
 
 
-class VRouterDevice(PlCoreBase):
+class VRouterDevice(XOSBase):
 
   KIND = "vROUTER"
 
@@ -95,7 +95,7 @@ class VRouterDevice(PlCoreBase):
 
 
 
-class VRouterInterface(PlCoreBase):
+class VRouterInterface(XOSBase):
 
   KIND = "vROUTER"
 
@@ -120,7 +120,7 @@ class VRouterInterface(PlCoreBase):
 
 
 
-class VRouterIp(PlCoreBase):
+class VRouterIp(XOSBase):
 
   KIND = "vROUTER"
 
@@ -144,7 +144,7 @@ class VRouterIp(PlCoreBase):
 
 
 
-class VRouterPort(PlCoreBase):
+class VRouterPort(XOSBase):
 
   KIND = "vROUTER"
 
