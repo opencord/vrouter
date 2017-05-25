@@ -103,7 +103,7 @@ class VRouterServiceAdmin(ReadOnlyAwareAdmin):
     suit_form_includes = ('vrouteradmin.html', 'top', 'administration')  # ('hpctools.html', 'top', 'tools') )
 
     def get_queryset(self, request):
-        return VRouterService.get_service_objects_by_user(request.user)
+        return VRouterService.select_by_user(request.user)
 
 
 class VRouterTenantForm(forms.ModelForm):
@@ -114,7 +114,7 @@ class VRouterTenantForm(forms.ModelForm):
     def __init__(self,*args,**kwargs):
         super (VRouterTenantForm,self ).__init__(*args,**kwargs)
         self.fields['kind'].widget.attrs['readonly'] = True
-        self.fields['provider_service'].queryset = VRouterService.get_service_objects().all()
+        self.fields['provider_service'].queryset = VRouterService.objects.all()
         if self.instance:
             # fields for the attributes
             self.fields['gateway_ip'].initial = self.instance.gateway_ip
@@ -149,7 +149,7 @@ class VRouterTenantAdmin(ReadOnlyAwareAdmin):
     suit_form_tabs = (('general', 'Details'),)
 
     def get_queryset(self, request):
-        return VRouterTenant.get_tenant_objects_by_user(request.user)
+        return VRouterTenant.select_by_user(request.user)
 
 
 class VRouterDeviceAdmin(ReadOnlyAwareAdmin):
