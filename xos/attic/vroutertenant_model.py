@@ -29,7 +29,7 @@ def cleanup_addresspool(self):
     if self.address_pool:
         ap = self.address_pool
         if ap:
-            ap[0].put_address(self.public_ip)
+            ap.put_address(self.public_ip)
             self.public_ip = None
 
 def delete(self, *args, **kwargs):
