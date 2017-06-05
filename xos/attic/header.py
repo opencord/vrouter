@@ -10,7 +10,6 @@ from core.models import Tag
 from core.models.service import LeastLoadedNodeScheduler
 import traceback
 from xos.exceptions import *
-from xos.config import Config
 
 
 class ConfigurationError(Exception):
@@ -23,5 +22,5 @@ APP_LABEL = "vrouter"
 # NOTE: don't change VROUTER_KIND unless you also change the reference to it
 #   in tosca/resources/network.py
 
-CORD_USE_VTN = getattr(Config(), "networking_use_vtn", False)
+CORD_USE_VTN = True
 
