@@ -1,6 +1,7 @@
 option kind="vROUTER";
 option name="vrouter";
 option verbose_name="vRouter Service";
+option legacy="True";
 
 message VRouterService (Service){
      optional string rest_hostname = 1 [db_index = False, max_length = 255, null = True, content_type = "stripped", blank = True];
