@@ -11,7 +11,7 @@ from django.utils import timezone
 from django.contrib.contenttypes import generic
 from suit.widgets import LinkedSelect
 from core.models import AddressPool
-from core.admin import ServiceAppAdmin, SliceInline, ServiceAttrAsTabInline, ReadOnlyAwareAdmin, XOSTabularInline, ServicePrivilegeInline, AddressPoolInline
+from core.admin import ServiceAppAdmin, SliceInline, ServiceAttrAsTabInline, ReadOnlyAwareAdmin, XOSTabularInline, ServicePrivilegeInline, AddressPoolInline, SubscriberLinkInline, ProviderLinkInline, ProviderDependencyInline,SubscriberDependencyInline
 from core.middleware import get_request
 
 from functools import update_wrapper
@@ -83,7 +83,7 @@ class VRouterServiceAdmin(ReadOnlyAwareAdmin):
         'rest_user',
         'rest_pass'
     )
-    inlines = [SliceInline, ServiceAttrAsTabInline, ServicePrivilegeInline, AddressPoolInline]
+    inlines = [SliceInline, ServiceAttrAsTabInline, ServicePrivilegeInline, AddressPoolInline, ProviderDependencyInline,SubscriberDependencyInline]
     form = VRouterServiceForm
 
     extracontext_registered_admins = True
@@ -97,6 +97,7 @@ class VRouterServiceAdmin(ReadOnlyAwareAdmin):
         # ('tools', 'Tools'),
         ('slices', 'Slices'),
         ('serviceattrs', 'Additional Attributes'),
+        ('servicetenants', 'Dependencies'),
         ('serviceprivileges', 'Privileges'),
     )
 
@@ -113,8 +114,7 @@ class VRouterTenantForm(forms.ModelForm):
 
     def __init__(self,*args,**kwargs):
         super (VRouterTenantForm,self ).__init__(*args,**kwargs)
-        self.fields['kind'].widget.attrs['readonly'] = True
-        self.fields['provider_service'].queryset = VRouterService.objects.all()
+        self.fields['owner'].queryset = VRouterService.objects.all()
         if self.instance:
             # fields for the attributes
             self.fields['gateway_ip'].initial = self.instance.gateway_ip
@@ -122,9 +122,8 @@ class VRouterTenantForm(forms.ModelForm):
             self.fields['cidr'].initial = self.instance.cidr
         if (not self.instance) or (not self.instance.pk):
             # default fields for an 'add' form
-            self.fields['kind'].initial = VROUTER_KIND
             if VRouterService.objects.exists():
-               self.fields["provider_service"].initial = VRouterService.objects.first()
+               self.fields["owner"].initial = VRouterService.objects.first()
 
     def save(self, commit=True):
         return super(VRouterTenantForm, self).save(commit=commit)
@@ -135,18 +134,19 @@ class VRouterTenantForm(forms.ModelForm):
 
 
 class VRouterTenantAdmin(ReadOnlyAwareAdmin):
-    list_display = ('backend_status_icon', 'id', 'subscriber_tenant', 'public_ip')
+    list_display = ('backend_status_icon', 'id', 'public_ip')
     list_display_links = ('backend_status_icon', 'id')
     fieldsets = [(None, {
         'fields': [
-            'backend_status_text', 'kind', 'provider_service', 'subscriber_tenant', 'subscriber_service',
+            'backend_status_text', 'owner',
             'address_pool', 'public_ip', 'public_mac', 'gateway_ip', 'gateway_mac', 'cidr'],
         'classes':['suit-tab suit-tab-general']
     })]
     readonly_fields = ('backend_status_text', 'service_specific_attribute', 'gateway_ip', 'gateway_mac', 'cidr')
+    inlines = (ProviderLinkInline, SubscriberLinkInline)
     form = VRouterTenantForm
 
-    suit_form_tabs = (('general', 'Details'),)
+    suit_form_tabs = (('general', 'Details'), ('servicelinks','Links'),)
 
     def get_queryset(self, request):
         return VRouterTenant.select_by_user(request.user)

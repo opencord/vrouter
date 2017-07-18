@@ -45,7 +45,7 @@ message VRouterIp (XOSBase){
      required string ip = 3 [help_text = "interface ips", max_length = 19, null = False, db_index = False, blank = False];
 }
 
-message VRouterTenant (Tenant){
+message VRouterTenant (ServiceInstance){
      optional string public_ip = 1 [db_index = False, max_length = 30, null = True, content_type = "stripped", blank = True];
      optional string public_mac = 2 [db_index = False, max_length = 30, null = True, content_type = "stripped", blank = True];
      optional manytoone address_pool->AddressPool:vrouter_tenants = 3 [db_index = True, null = True, blank = True];
