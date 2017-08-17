@@ -1,9 +1,10 @@
 option kind="vROUTER";
 option name="vrouter";
-option verbose_name="vRouter Service";
 option legacy="True";
 
 message VRouterService (Service){
+     option verbose_name="vRouter Service";
+
      optional string rest_hostname = 1 [db_index = False, max_length = 255, null = True, content_type = "stripped", blank = True];
      required int32 rest_port = 2 [default = 8181, null = False, db_index = False, blank = False];
      required string rest_user = 3 [default = "onos", max_length = 255, content_type = "stripped", blank = False, null = False, db_index = False];
@@ -11,6 +12,8 @@ message VRouterService (Service){
 }
 
 message VRouterDevice (XOSBase){
+     option verbose_name="vRouter Device";
+
      optional string name = 1 [help_text = "device friendly name", max_length = 20, null = True, db_index = False, blank = True];
      required string openflow_id = 2 [help_text = "device identifier in ONOS", max_length = 20, null = False, db_index = False, blank = False];
      required string config_key = 3 [default = "basic", max_length = 32, blank = False, help_text = "configuration key", null = False, db_index = False];
@@ -19,6 +22,8 @@ message VRouterDevice (XOSBase){
 }
 
 message VRouterPort (XOSBase){
+     option verbose_name="vRouter Port";
+
      optional string name = 1 [help_text = "port friendly name", max_length = 20, null = True, db_index = False, blank = True];
      required string openflow_id = 2 [help_text = "port identifier in ONOS", max_length = 21, null = False, db_index = False, blank = False];
      required manytoone vrouter_device->VRouterDevice:ports = 3 [db_index = True, null = False, blank = False];
@@ -26,6 +31,8 @@ message VRouterPort (XOSBase){
 }
 
 message VRouterApp (XOSBase){
+     option verbose_name="vRouter App";
+
      required manytoone vrouter_service->VRouterService:apps = 1 [db_index = True, null = False, blank = False];
      required string name = 2 [help_text = "application name", max_length = 50, null = False, db_index = False, blank = False];
      required string control_plane_connect_point = 3 [help_text = "port identifier in ONOS", max_length = 21, null = False, db_index = False, blank = False];
@@ -33,6 +40,8 @@ message VRouterApp (XOSBase){
 }
 
 message VRouterInterface (XOSBase) {
+     option verbose_name="vRouter Interface";
+
      required manytoone vrouter_port->VRouterPort:interfaces = 1 [db_index = True, null = False, blank = False];
      required string name = 2 [help_text = "interface name", max_length = 10, null = False, db_index = False, blank = False];
      required string mac = 3 [help_text = "interface mac", max_length = 17, null = False, db_index = False, blank = False];
@@ -40,12 +49,16 @@ message VRouterInterface (XOSBase) {
 }
 
 message VRouterIp (XOSBase){
+     option verbose_name="vRouter Ip";
+
      optional string name = 1 [help_text = "ip friendly name", max_length = 20, null = True, db_index = False, blank = True];
      required manytoone vrouter_interface->VRouterInterface:ips = 2 [db_index = True, null = False, blank = False];
      required string ip = 3 [help_text = "interface ips", max_length = 19, null = False, db_index = False, blank = False];
 }
 
 message VRouterTenant (ServiceInstance){
+     option verbose_name="vRouter Tenant";
+
      optional string public_ip = 1 [db_index = False, max_length = 30, null = True, content_type = "stripped", blank = True];
      optional string public_mac = 2 [db_index = False, max_length = 30, null = True, content_type = "stripped", blank = True];
      optional manytoone address_pool->AddressPool:vrouter_tenants = 3 [db_index = True, null = True, blank = True];
