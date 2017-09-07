@@ -1,6 +1,7 @@
 option kind="vROUTER";
 option name="vrouter";
 option legacy="True";
+option app_label = "vrouter";
 
 message VRouterService (Service){
      option verbose_name="vRouter Service";
