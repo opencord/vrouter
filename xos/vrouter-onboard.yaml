@@ -27,13 +27,6 @@ topology_template:
       type: tosca.nodes.ServiceController
       properties:
           base_url: file:///opt/xos_services/vrouter/xos/
-          # The following will concatenate with base_url automatically, if
-          # base_url is non-null.
-          xproto: ./
-          admin: admin.py
-          admin_template: templates/vrouteradmin.html
-          tosca_custom_types: vrouter.yaml
-          tosca_resource: tosca/resources/vrouterservice.py
 
 
 

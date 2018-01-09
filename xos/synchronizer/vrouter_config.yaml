@@ -14,10 +14,16 @@
 # limitations under the License.
 
 
-name: vrouter-synchronizer
+name: vrouter
 accessor:
   username: xosadmin@opencord.org
   password: "@/opt/xos/services/vrouter/credentials/xosadmin@opencord.org"
+required_models:
+  - VRouterService
+  - VRouterDevice
+  - VRouterApp
+  - VRouterPort
 dependency_graph: "/opt/xos/synchronizers/vrouter/model-deps"
 steps_dir: "/opt/xos/synchronizers/vrouter/steps"
 sys_dir: "/opt/xos/synchronizers/vrouter/sys"
+models_dir: "/opt/xos/synchronizers/vrouter/models"
