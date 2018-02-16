@@ -23,7 +23,6 @@ from django.forms.models import model_to_dict
 from django.db.models import *
 from operator import itemgetter, attrgetter, methodcaller
 from core.models import Tag
-from core.models.service import LeastLoadedNodeScheduler
 import traceback
 from xos.exceptions import *
 from models_decl import *
