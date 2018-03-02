@@ -59,6 +59,7 @@ message VRouterIp (XOSBase){
 
 message VRouterTenant (ServiceInstance){
      option verbose_name="vRouter Tenant";
+     option owner_class_name="VRouterService";
 
      optional string public_ip = 1 [db_index = False, max_length = 30, null = True, content_type = "stripped", blank = True];
      optional string public_mac = 2 [db_index = False, max_length = 30, null = True, content_type = "stripped", blank = True];
