@@ -1,4 +1,3 @@
-
 # Copyright 2017-present Open Networking Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,15 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+class Helpers():
+    @staticmethod
+    def format_url(url):
+        if 'http' in url:
+            return url
+        else:
+            return 'http://%s' % url
 
-name: vrouter
-accessor:
-  username: xosadmin@opencord.org
-  password: "@/opt/xos/services/vrouter/credentials/xosadmin@opencord.org"
-required_models:
-  - VRouterService
-  - VRouterServiceInstance
-dependency_graph: "/opt/xos/synchronizers/vrouter/model-deps"
-steps_dir: "/opt/xos/synchronizers/vrouter/steps"
-sys_dir: "/opt/xos/synchronizers/vrouter/sys"
-models_dir: "/opt/xos/synchronizers/vrouter/models"
+    @staticmethod
+    def get_onos_info(onos_service):
+        return {
+            'url': Helpers.format_url(onos_service.rest_hostname),
+            'port': onos_service.rest_port,
+            'user': onos_service.rest_username,
+            'pass': onos_service.rest_password
+        }

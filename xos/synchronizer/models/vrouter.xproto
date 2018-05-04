@@ -1,67 +1,23 @@
 option kind="vROUTER";
 option name="vrouter";
-option legacy="True";
 option app_label = "vrouter";
 
-message VRouterService (Service){
-     option verbose_name="vRouter Service";
-
-     optional string rest_hostname = 1 [db_index = False, max_length = 255, null = True, content_type = "stripped", blank = True];
-     required int32 rest_port = 2 [default = 8181, null = False, db_index = False, blank = False];
-     required string rest_user = 3 [default = "onos", max_length = 255, content_type = "stripped", blank = False, null = False, db_index = False];
-     required string rest_pass = 4 [default = "rocks", max_length = 255, content_type = "stripped", blank = False, null = False, db_index = False];
+message VRouterService (Service) {
+    option verbose_name = "vRouter Service";
 }
 
-message VRouterDevice (XOSBase){
-     option verbose_name="vRouter Device";
+message VRouterServiceInstance (ServiceInstance) {
+    option verbose_name = "vRouter Service Instance";
+    option owner_class_name = "VRouterService";
 
-     optional string name = 1 [help_text = "device friendly name", max_length = 20, null = True, db_index = False, blank = True];
-     required string openflow_id = 2 [help_text = "device identifier in ONOS", max_length = 20, null = False, db_index = False, blank = False];
-     required string config_key = 3 [default = "basic", max_length = 32, blank = False, help_text = "configuration key", null = False, db_index = False];
-     required string driver = 4 [help_text = "driver type", max_length = 32, null = False, db_index = False, blank = False];
-     required manytoone vrouter_service->VRouterService:devices = 5 [db_index = True, null = False, blank = False];
+    // TODO - to be added to select interfaces the vrouter attaches to (use _decl)
+    // required manytoone interface->PortInterface:vrouters = 1 [help_text = "The fabric port interface to which the router is connected to", db_index = False, null = False, blank = False];
 }
 
-message VRouterPort (XOSBase){
-     option verbose_name="vRouter Port";
+message VRouterStaticRoute (XOSBase) {
+    option verbose_name = "vRouter static route";
 
-     optional string name = 1 [help_text = "port friendly name", max_length = 20, null = True, db_index = False, blank = True];
-     required string openflow_id = 2 [help_text = "port identifier in ONOS", max_length = 21, null = False, db_index = False, blank = False];
-     required manytoone vrouter_device->VRouterDevice:ports = 3 [db_index = True, null = False, blank = False];
-     required manytoone vrouter_service->VRouterService:device_ports = 4 [db_index = True, null = False, blank = False];
-}
-
-message VRouterApp (XOSBase){
-     option verbose_name="vRouter App";
-
-     required manytoone vrouter_service->VRouterService:apps = 1 [db_index = True, null = False, blank = False];
-     required string name = 2 [help_text = "application name", max_length = 50, null = False, db_index = False, blank = False];
-     required string control_plane_connect_point = 3 [help_text = "port identifier in ONOS", max_length = 21, null = False, db_index = False, blank = False];
-     required bool ospf_enabled = 4 [help_text = "ospf enabled", default = True, null = False, db_index = False, blank = True];
-}
-
-message VRouterInterface (XOSBase) {
-     option verbose_name="vRouter Interface";
-
-     required manytoone vrouter_port->VRouterPort:interfaces = 1 [db_index = True, null = False, blank = False];
-     required string name = 2 [help_text = "interface name", max_length = 10, null = False, db_index = False, blank = False];
-     required string mac = 3 [help_text = "interface mac", max_length = 17, null = False, db_index = False, blank = False];
-     optional string vlan = 4 [help_text = "interface vlan id", max_length = 10, null = True, db_index = False, blank = True];
-}
-
-message VRouterIp (XOSBase){
-     option verbose_name="vRouter Ip";
-
-     optional string name = 1 [help_text = "ip friendly name", max_length = 20, null = True, db_index = False, blank = True];
-     required manytoone vrouter_interface->VRouterInterface:ips = 2 [db_index = True, null = False, blank = False];
-     required string ip = 3 [help_text = "interface ips", max_length = 19, null = False, db_index = False, blank = False];
-}
-
-message VRouterTenant (ServiceInstance){
-     option verbose_name="vRouter Tenant";
-     option owner_class_name="VRouterService";
-
-     optional string public_ip = 1 [db_index = False, max_length = 30, null = True, content_type = "stripped", blank = True];
-     optional string public_mac = 2 [db_index = False, max_length = 30, null = True, content_type = "stripped", blank = True];
-     optional manytoone address_pool->AddressPool:vrouter_tenants = 3 [db_index = True, null = True, blank = True];
+    required manytoone vrouter->VRouterServiceInstance:static_routes = 1 [help_text = "The static route to be configured in ONOS", db_index = False, null = False, blank = False];
+    required string prefix = 2 [help_text = "The destination prefix and netmask (xxx.yyy.www.zzz/nm)", max_length = 20, null = False, tosca_key = True, db_index = False, unique = True, blank = False];
+    required string next_hop = 5 [help_text = "The next-hop for the route", max_length = 17, null = False, db_index = False, blank = False];
 }
