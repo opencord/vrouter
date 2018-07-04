@@ -13,7 +13,7 @@
 # limitations under the License.
 
 # xosproject/vrouter-synchronizer
-FROM xosproject/xos-synchronizer-base:candidate
+FROM xosproject/xos-synchronizer-base:2.0.0
 
 COPY xos/synchronizer /opt/xos/synchronizers/vrouter
 COPY VERSION /opt/xos/synchronizers/vrouter/
