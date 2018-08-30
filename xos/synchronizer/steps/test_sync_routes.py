@@ -93,11 +93,11 @@ class TestSyncRoutes(unittest.TestCase):
 
         self.fabric = Mock()
         self.fabric.name = "fabric"
-        self.fabric.subscriber_services = [onos_fabric_base]
+        self.fabric.provider_services = [onos_fabric_base]
 
         self.vrouter = Mock()
         self.vrouter.name = "vrouter"
-        self.vrouter.subscriber_services = [self.fabric]
+        self.vrouter.provider_services = [self.fabric]
 
         # create a mock VRouterStaticRoute instance
         self.o = Mock()

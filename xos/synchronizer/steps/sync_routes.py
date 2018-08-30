@@ -31,8 +31,8 @@ class SyncRoutes(SyncStep):
     # Get fabric service info
     def get_onos_fabric_service(self, model):
         vrouter_service = model.vrouter.owner
-        fabric_service = vrouter_service.subscriber_services[0]
-        onos_fabric_service = fabric_service.subscriber_services[0]
+        fabric_service = vrouter_service.provider_services[0]
+        onos_fabric_service = fabric_service.provider_services[0]
 
         return onos_fabric_service
 
