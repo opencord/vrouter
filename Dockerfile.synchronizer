@@ -15,7 +15,7 @@
 # docker build -t xosproject/vrouter-synchronizer:candidate -f Dockerfile.synchronizer .
 
 # xosproject/vrouter-synchronizer
-FROM xosproject/xos-synchronizer-base:master
+FROM xosproject/xos-synchronizer-base:2.1.12
 
 COPY xos/synchronizer /opt/xos/synchronizers/vrouter
 COPY VERSION /opt/xos/synchronizers/vrouter/
