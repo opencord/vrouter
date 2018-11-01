@@ -18,6 +18,6 @@ message VRouterStaticRoute (XOSBase) {
     option verbose_name = "vRouter static route";
 
     required manytoone vrouter->VRouterServiceInstance:static_routes = 1 [help_text = "The static route to be configured in ONOS", db_index = False, null = False, blank = False];
-    required string prefix = 2 [help_text = "The destination prefix and netmask (xxx.yyy.www.zzz/nm)", max_length = 20, null = False, tosca_key = True, db_index = False, unique = True, blank = False];
-    required string next_hop = 5 [help_text = "The next-hop for the route", max_length = 17, null = False, db_index = False, blank = False];
+    required string prefix = 2 [help_text = "The destination prefix and netmask (IP/NM)", max_length = 52, null = False, tosca_key = True, db_index = False, unique = True, blank = False];
+    required string next_hop = 5 [help_text = "The next-hop for the route", max_length = 52, null = False, db_index = False, blank = False];
 }

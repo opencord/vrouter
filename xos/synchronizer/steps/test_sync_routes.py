@@ -75,10 +75,8 @@ class TestSyncRoutes(unittest.TestCase):
         for (k, v) in model_accessor.all_model_classes.items():
             globals()[k] = v
 
-
         self.sync_step = SyncRoutes
         self.sync_step.log = Mock()
-
 
         # mock onos-fabric
         onos_fabric = Mock()
@@ -105,18 +103,15 @@ class TestSyncRoutes(unittest.TestCase):
         self.o.vrouter.owner = self.vrouter
         self.o.tologdict.return_value = {}
 
-
-
-
     def tearDown(self):
         self.o = None
         sys.path = self.sys_path_save
 
     @requests_mock.Mocker()
-    def test_sync_route(self, m):
+    def test_sync_route_ipv4(self, m):
 
-        self.o.next_hop = "192.168.0.254"
         self.o.prefix = "0.0.0.0/0"
+        self.o.next_hop = "192.168.0.254"
 
         expected_conf = {
           "prefix": self.o.prefix,
@@ -132,10 +127,48 @@ class TestSyncRoutes(unittest.TestCase):
         self.assertTrue(m.called)
 
     @requests_mock.Mocker()
-    def test_delete_route(self, m):
+    def test_sync_route_ipv6(self, m):
 
-        self.o.next_hop = "192.168.0.254"
+        self.o.prefix = "::/0"
+        self.o.next_hop = "2001:db8:abcd:0012::0/64"
+
+        expected_conf = {
+          "prefix": self.o.prefix,
+          "nextHop": self.o.next_hop
+        }
+
+        m.post("http://onos-fabric:8181/onos/routeservice/routes",
+               status_code=204,
+               additional_matcher=functools.partial(match_json, expected_conf))
+
+        self.sync_step().sync_record(self.o)
+
+        self.assertTrue(m.called)
+
+    @requests_mock.Mocker()
+    def test_delete_route_ipv4(self, m):
+
         self.o.prefix = "0.0.0.0/0"
+        self.o.next_hop = "192.168.0.254"
+
+        expected_conf = {
+            "prefix": self.o.prefix,
+            "nextHop": self.o.next_hop
+        }
+
+        m.delete("http://onos-fabric:8181/onos/routeservice/routes",
+            status_code=204,
+            additional_matcher=functools.partial(match_json, expected_conf))
+
+        self.sync_step().delete_record(self.o)
+
+        self.assertTrue(m.called)
+
+    @requests_mock.Mocker()
+    def test_delete_route_ipv6(self, m):
+
+        self.o.prefix = "::/0"
+        self.o.next_hop = "2001:db8:abcd:0012::0/64"
 
         expected_conf = {
             "prefix": self.o.prefix,
