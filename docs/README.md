@@ -1,6 +1,6 @@
-# VRouter service
+# vRouter service
 
-The vRouter is responsible to configure routes in the Trellis Fabric.
+The vRouter Service is responsible for configuring routes in the Trellis Fabric.
 
 It is required that the `vRouter` service is a `provider_service`
 of the `fabric` service, and the `fabric` service is a `provider_service` of
@@ -11,7 +11,18 @@ so that this will be part of your service graph:
 ONOS_Fabric <- Fabric <- vRouter
 ```
 
-## Configure a static route
+## Models
+
+The `vRouter`service is composed of the following models:
+
+- `VRouterService`. Extends the core `Service` model, has no additional vRouter-specific fields.
+- `VRouterServiceInstance`. Extends the core `ServiceInstance` model, has no additional vRouter-specific fields.
+- `VRouterStaticRoute` implements a static route.
+    - `vrouter`. Relation to the `VRouterService` that owns this route.
+    - `prefix`. The destination prefix and netmask (IP/NM).
+    - `next_hop`. The next-hop for this route.
+
+## Example TOSCA: Configure a static route
 
 This is an example recipe to configure a static route so that your
 Subscribers can get Internet access:
@@ -40,3 +51,13 @@ topology_template:
             node: vrouter#my_vrouter
             relationship: tosca.relationships.BelongsToOne
 ```
+
+## Integration with other Services
+
+The `vRouter` service depends upon the `Fabric` service.
+
+## Synchronizer Workflows
+
+### SyncRoutes
+
+The `SyncRoutes` step synchronizes `VRouterStaticRoute` objects to ONOS.
