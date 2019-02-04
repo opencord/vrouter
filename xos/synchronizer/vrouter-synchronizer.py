@@ -16,9 +16,8 @@
 
 # Runs the standard XOS synchronizer
 
-import importlib
 import os
-import sys
+from xossynchronizer import Synchronizer
 from xosconfig import Config
 
 base_config_file = os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + '/config.yaml')
@@ -29,7 +28,4 @@ if os.path.isfile(mounted_config_file):
 else:
     Config.init(base_config_file, 'synchronizer-config-schema.yaml')
 
-synchronizer_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../synchronizers/new_base")
-sys.path.append(synchronizer_path)
-mod = importlib.import_module("xos-synchronizer")
-mod.main()
+Synchronizer().run()

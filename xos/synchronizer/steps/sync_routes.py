@@ -15,8 +15,8 @@
 
 import requests
 from requests.auth import HTTPBasicAuth
-from synchronizers.new_base.syncstep import SyncStep, DeferredException
-from synchronizers.new_base.modelaccessor import VRouterStaticRoute, model_accessor
+from xossynchronizer.steps.syncstep import SyncStep, DeferredException
+from xossynchronizer.modelaccessor import VRouterStaticRoute, model_accessor
 
 from helpers import Helpers
 from multistructlog import create_logger
