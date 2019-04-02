@@ -15,8 +15,15 @@
 # docker build -t xosproject/vrouter-synchronizer:candidate -f Dockerfile.synchronizer .
 
 # xosproject/vrouter-synchronizer
-FROM xosproject/xos-synchronizer-base:2.2.5
 
+FROM xosproject/alpine-grpc-base:0.9.0
+
+# Install pip packages
+COPY requirements.txt /tmp/requirements.txt
+RUN pip install -r /tmp/requirements.txt \
+ && pip freeze > /var/xos/pip_freeze_vrouter_service_`date -u +%Y%m%dT%H%M%S`
+ 
+# Copy code
 COPY xos/synchronizer /opt/xos/synchronizers/vrouter
 COPY VERSION /opt/xos/synchronizers/vrouter/
 
