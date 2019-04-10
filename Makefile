@@ -52,7 +52,7 @@ docker-build:
 docker-push:
 	docker push ${DOCKER_IMAGENAME}
 
-test: test-unit test-migration
+test: test-unit test-migration test-xproto
 
 test-unit:
 	tox
@@ -60,7 +60,7 @@ test-unit:
 venv-service:
 	virtualenv $@;\
     source ./$@/bin/activate ; set -u ;\
-    pip install -r requirements.txt xosmigrate~=3.0.1
+    pip install -r requirements.txt xosmigrate~=3.2.1
 
 create-migration: venv-service
 	source ./venv-service/bin/activate; set -u;\
@@ -69,6 +69,10 @@ create-migration: venv-service
 test-migration: venv-service
 	source ./venv-service/bin/activate; set -u;\
     cd xos; xos-migrate --xos-dir ${XOS_DIR} --services-dir ${SERVICES_DIR} -s ${SERVICE_NAME} --check
+
+test-xproto: venv-service
+	source ./venv-service/bin/activate; set -u;\
+    xosgenx --lint --strict xos/synchronizer/models/vrouter.xproto
 
 clean:
 	find . -name '*.pyc' | xargs rm -f
