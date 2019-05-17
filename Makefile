@@ -60,7 +60,7 @@ test-unit:
 venv-service:
 	virtualenv $@;\
     source ./$@/bin/activate ; set -u ;\
-    pip install -r requirements.txt xosmigrate~=3.2.1
+    pip install -r requirements.txt xosmigrate~=3.2.6
 
 create-migration: venv-service
 	source ./venv-service/bin/activate; set -u;\
